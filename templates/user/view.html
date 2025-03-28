@@ -1,0 +1,34 @@
+{% extends 'layout.html' %} {% block title %} View Quiz {% endblock %} {% block
+content %}
+<div class="container mt-5">
+  <h1 class="display-4 text-center text-purple mb-4">Quiz Details</h1>
+  <ul class="list-group mb-4">
+    <li class="list-group-item"><strong>Quiz ID:</strong> {{ quiz.id }}</li>
+    <li class="list-group-item">
+      <strong>Subject:</strong> {{ quiz.chapter.subject.name }}
+    </li>
+    <li class="list-group-item">
+      <strong>Chapter:</strong> {{ quiz.chapter.name }}
+    </li>
+    <li class="list-group-item">
+      <strong>No. of Questions:</strong> {{ quiz.questions|length }}
+    </li>
+    <li class="list-group-item">
+      <strong>Scheduled Date:</strong> {{ quiz.date_of_quiz }}
+    </li>
+    <li class="list-group-item">
+      <strong>Duration:</strong> {{ quiz.time_duration }} minutes
+    </li>
+    <li class="list-group-item">
+      <strong>Remarks:</strong> {{ quiz.remarks if quiz.remarks else "No remarks
+      available." }}
+    </li>
+  </ul>
+
+  <div class="text-center">
+    <a href="{{ url_for('index') }}" class="btn btn-purple mt-3"
+      >Back to Quizzes</a
+    >
+  </div>
+</div>
+{% endblock %}

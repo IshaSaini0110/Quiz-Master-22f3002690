@@ -1,0 +1,151 @@
+{% extends 'layout.html' %} {% block title %}Admin Summary{% endblock %} {%
+block content %}
+<div class="container mt-5">
+  <h1 class="display-1 text-center text-purple mb-4">Admin Summary</h1>
+
+  <hr />
+
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="text-center">Chapters per Subject</h3>
+      <canvas id="barChartChapters"></canvas>
+    </div>
+    <div class="col-md-6">
+      <h3 class="text-center">Average Scores per Subject</h3>
+      <canvas id="barChartScores"></canvas>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6 offset-md-3">
+      <h3 class="text-center">Quiz Attempts per Subject</h3>
+      <canvas id="pieChartAttempts"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Pass data from Flask to JavaScript -->
+<script id="subjects-chapters-data" type="application/json">
+  {{ subjects_chapters | tojson | safe }}
+</script>
+<script id="chapters-count-data" type="application/json">
+  {{ chapters_count | tojson | safe }}
+</script>
+<script id="subjects-scores-data" type="application/json">
+  {{ subjects_scores | tojson | safe }}
+</script>
+<script id="average-scores-data" type="application/json">
+  {{ average_scores | tojson | safe }}
+</script>
+<script id="subjects-attempts-data" type="application/json">
+  {{ subjects_attempts | tojson | safe }}
+</script>
+<script id="attempts-count-data" type="application/json">
+  {{ attempts_count | tojson | safe }}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var subjectsChapters = JSON.parse(
+      document.getElementById("subjects-chapters-data").textContent
+    );
+    var chaptersCount = JSON.parse(
+      document.getElementById("chapters-count-data").textContent
+    );
+    var subjectsScores = JSON.parse(
+      document.getElementById("subjects-scores-data").textContent
+    );
+    var averageScores = JSON.parse(
+      document.getElementById("average-scores-data").textContent
+    );
+    var subjectsAttempts = JSON.parse(
+      document.getElementById("subjects-attempts-data").textContent
+    );
+    var attemptsCount = JSON.parse(
+      document.getElementById("attempts-count-data").textContent
+    );
+
+    var barCtxChapters = document
+      .getElementById("barChartChapters")
+      .getContext("2d");
+    var barCtxScores = document
+      .getElementById("barChartScores")
+      .getContext("2d");
+    var pieCtxAttempts = document
+      .getElementById("pieChartAttempts")
+      .getContext("2d");
+
+    // Bar Chart - Chapters per Subject
+    new Chart(barCtxChapters, {
+      type: "bar",
+      data: {
+        labels: subjectsChapters,
+        datasets: [
+          {
+            label: "Number of Chapters",
+            data: chaptersCount,
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 },
+          },
+        },
+      },
+    });
+
+    // Bar Chart - Average Scores per Subject
+    new Chart(barCtxScores, {
+      type: "bar",
+      data: {
+        labels: subjectsScores,
+        datasets: [
+          {
+            label: "Average Score",
+            data: averageScores,
+            backgroundColor: "rgba(255, 159, 64, 0.6)",
+            borderColor: "rgba(255, 159, 64, 1)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+
+    // Pie Chart - Quiz Attempts per Subject
+    new Chart(pieCtxAttempts, {
+      type: "pie",
+      data: {
+        labels: subjectsAttempts,
+        datasets: [
+          {
+            data: attemptsCount,
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.6)",
+              "rgba(54, 162, 235, 0.6)",
+              "rgba(255, 206, 86, 0.6)",
+              "rgba(75, 192, 192, 0.6)",
+              "rgba(153, 102, 255, 0.6)",
+            ],
+          },
+        ],
+      },
+    });
+  });
+</script>
+{% endblock %}

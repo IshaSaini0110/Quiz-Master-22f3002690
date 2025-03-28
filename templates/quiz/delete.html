@@ -1,0 +1,35 @@
+{% extends 'layout.html' %} {% block title %} Delete Quiz {% endblock %} {%
+block content %}
+<div class="container">
+  <h1 class="display-4 text-danger">Delete Quiz</h1>
+  <p>Are you sure you want to delete this quiz?</p>
+
+  <ul class="list-group mb-3">
+    <li class="list-group-item"><strong>Quiz ID:</strong> {{ quiz.id }}</li>
+    <li class="list-group-item">
+      <strong>Chapter ID:</strong> {{ quiz.chapter_id }}
+    </li>
+    <li class="list-group-item">
+      <strong>Chapter Name:</strong> {{ quiz.chapter.name }}
+    </li>
+    <li class="list-group-item">
+      <strong>Date:</strong> {{ quiz.date_of_quiz }}
+    </li>
+    <li class="list-group-item">
+      <strong>Time Duration:</strong> {{ quiz.time_duration }}
+    </li>
+    <li class="list-group-item">
+      <strong>Remarks:</strong> {{ quiz.remarks }}
+    </li>
+  </ul>
+
+  <form action="" method="post">
+    <button type="submit" class="btn btn-danger">
+      <i class="fas fa-trash"></i> Confirm Delete
+    </button>
+    <a href="{{ url_for('quiz') }}" class="btn btn-secondary"
+      ><i class="fas fa-arrow-left"></i> Cancel</a
+    >
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'layout.html' %} {% block title %} Profile Page {% endblock %} {%
+block content %}
+<div class="container mt-5">
+  <!-- Card for Profile Information and Update Form -->
+  <!-- Header Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="display-4">
+        Hello
+        <span class="text-purple">@{{ user.username }}</span>
+      </h1>
+    </div>
+    <div class="profile-pic">
+      <img
+        src="https://api.dicebear.com/9.x/lorelei/svg?{{ user.username }}"
+        width="100"
+        alt="Profile Picture"
+      />
+    </div>
+  </div>
+
+  <!-- Update Form -->
+  <form action="" method="post" class="form">
+    <div class="form-group mb-3">
+      <label for="username" class="form-label">Username</label>
+      <input
+        type="text"
+        name="username"
+        value="{{ user.username }}"
+        required
+        class="form-control"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="password" class="form-label">Current Password</label>
+      <input type="password" name="cpassword" required class="form-control" />
+    </div>
+    <div class="form-group mb-3">
+      <label for="password" class="form-label">New Password</label>
+      <input type="password" name="password" required class="form-control" />
+    </div>
+    <div class="form-group mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="text"
+        name="email"
+        value="{{ user.email }}"
+        required
+        class="form-control"
+      />
+    </div>
+    <div class="form-group mb-3">
+      <label for="fullName" class="form-label">Full Name</label>
+      <input
+        type="text"
+        name="fullName"
+        id="fullName"
+        value="{{ user.fullName }}"
+        class="form-control"
+      />
+    </div>
+
+    <!-- Buttons Section -->
+    <div class="buttons d-flex justify-content-center mt-3">
+      <!-- Update button styled in purple -->
+      <input type="submit" value="Update" class="btn btn-purple me-2" />
+      <!-- Logout button styled in danger -->
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger"
+        >Logout</a
+      >
+    </div>
+  </form>
+</div>
+
+{% endblock %} {% block style %}
+<style>
+  /* Purple Theme Styling */
+  .text-purple {
+    color: #7a288a; /* Purple text color */
+  }
+
+  .btn-purple {
+    background-color: #7a288a; /* Purple button background */
+    color: white; /* White text */
+  }
+
+  .btn-purple:hover {
+    background-color: #5c1a7d; /* Darker purple on hover */
+  }
+
+  .profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid #7a288a; /* Purple border */
+    overflow: hidden;
+  }
+
+  .shadow-sm {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for the card */
+    border-radius: 10px; /* Rounded corners for a softer look */
+  }
+
+  /* Custom styles for the form */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    font-weight: bold;
+  }
+</style>
+{% endblock %}

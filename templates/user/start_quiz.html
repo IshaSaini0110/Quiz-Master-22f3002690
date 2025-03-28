@@ -1,0 +1,130 @@
+{% extends 'layout.html' %} {% block title %}Attempt Quiz{% endblock %} {% block
+content %}
+<div class="container">
+  <div class="d-flex justify-content-between">
+    <h4>
+      Question <span id="question-number">1</span> / {{ total_questions }}
+    </h4>
+    <h4>Time Left: <span id="timer"></span></h4>
+  </div>
+
+  <hr />
+
+  <form
+    id="quiz-form"
+    action="{{ url_for('submit_quiz', quiz_id=quiz.id) }}"
+    method="post"
+  >
+    <div id="question-container">
+      {% for question in questions %}
+      <div
+        class="question"
+        id="question-{{ loop.index0 }}"
+        data-question-id="{{ question.id }}"
+        style="display: {% if loop.index0 == 0 %}block{% else %}none{% endif %}"
+      >
+        <h5>{{ question.question_statement }}</h5>
+        <div class="options">
+          <label>
+            <input type="radio" name="question_{{ question.id }}" value="1" />
+            {{ question.option1 }} </label
+          ><br />
+          <label>
+            <input type="radio" name="question_{{ question.id }}" value="2" />
+            {{ question.option2 }} </label
+          ><br />
+          {% if question.option3 %}
+          <label>
+            <input type="radio" name="question_{{ question.id }}" value="3" />
+            {{ question.option3 }} </label
+          ><br />
+          {% endif %} {% if question.option4 %}
+          <label>
+            <input type="radio" name="question_{{ question.id }}" value="4" />
+            {{ question.option4 }} </label
+          ><br />
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-4">
+      <!-- Change button class to btn-purple for purple theme -->
+      <button type="button" id="next-button" class="btn btn-purple">
+        Save & Next
+      </button>
+      <button
+        type="submit"
+        id="submit-button"
+        class="btn btn-success"
+        style="display: none"
+      >
+        Submit Quiz
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Pass Python variables to JavaScript
+  var totalQuestions = "{{ total_questions|safe }}";
+  var timeDuration = "{{ time_duration|safe }}";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var currentQuestion = 0;
+    var nextButton = document.getElementById("next-button");
+    var submitButton = document.getElementById("submit-button");
+    var questionNumber = document.getElementById("question-number");
+
+    // Convert string to number
+    totalQuestions = parseInt(totalQuestions);
+    timeDuration = parseInt(timeDuration);
+
+    // Function to handle navigation to next question
+    function goToNextQuestion() {
+      // Hide current question
+      document.getElementById("question-" + currentQuestion).style.display =
+        "none";
+
+      // Move to next question
+      currentQuestion++;
+
+      // Show next question
+      if (currentQuestion < totalQuestions) {
+        document.getElementById("question-" + currentQuestion).style.display =
+          "block";
+        questionNumber.textContent = currentQuestion + 1;
+
+        // Show submit button on last question
+        if (currentQuestion === totalQuestions - 1) {
+          nextButton.style.display = "none";
+          submitButton.style.display = "block";
+        }
+      }
+    }
+
+    // Add click event listener to next button
+    nextButton.addEventListener("click", goToNextQuestion);
+
+    // Timer implementation
+    var totalSeconds = timeDuration * 60;
+
+    function updateTimer() {
+      var minutes = Math.floor(totalSeconds / 60);
+      var seconds = totalSeconds % 60;
+      document.getElementById("timer").textContent =
+        minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+      if (totalSeconds > 0) {
+        totalSeconds--;
+        setTimeout(updateTimer, 1000);
+      } else {
+        document.getElementById("quiz-form").submit();
+      }
+    }
+
+    updateTimer();
+  });
+</script>
+{% endblock %}

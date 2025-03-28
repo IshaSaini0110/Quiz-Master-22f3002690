@@ -1,0 +1,58 @@
+{% extends 'layout.html' %} 
+{% block title %} Edit Quiz {% endblock %} 
+
+{% block content %}
+<div class="container">
+  <h1 class="display-4">Edit Quiz</h1>
+
+  <form action="" method="post" class="form">
+    <div class="form-group">
+      <label for="chapter_id" class="form-label">Select Chapter</label>
+      <select name="chapter_id" id="chapter_id" class="form-control" required>
+        {% for chapter in chapters %}
+        <option value="{{ chapter.id }}" {% if chapter.id == quiz.chapter_id %}selected{% endif %}>
+          {{ chapter.name }} ({{ chapter.subject.name }})
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="date_of_quiz">Date</label>
+      <input
+        type="date"
+        name="date_of_quiz"
+        id="date_of_quiz"
+        class="form-control"
+        value="{{ quiz.date_of_quiz }}"
+        min="{{ current_date }}"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="time_duration">Duration (Minutes)</label>
+      <input
+        type="time"
+        name="time_duration"
+        id="time_duration"
+        class="form-control"
+        value="{{ quiz.time_duration }}"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="remarks">Remarks</label>
+      <textarea name="remarks" id="remarks" class="form-control" rows="3">{{ quiz.remarks }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      <i class="fas fa-save"></i> Save Changes
+    </button>
+    <a href="{{ url_for('quiz') }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Cancel
+    </a>
+  </form>
+</div>
+{% endblock %}

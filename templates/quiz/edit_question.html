@@ -1,0 +1,97 @@
+{% extends 'layout.html' %} {% block title %} Edit Question {% endblock %} {%
+block content %}
+<h1 class="display-1">Edit Question</h1>
+
+<form action="" method="post" class="form">
+  <div class="form-group">
+    <label for="question_heading" class="form-label">Question Heading</label>
+    <input
+      type="text"
+      name="question_heading"
+      id="question_heading"
+      class="form-control"
+      required
+      value="{{ question.question_heading }}"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="question_statement" class="form-label"
+      >Question Statement</label
+    >
+    <textarea
+      name="question_statement"
+      id="question_statement"
+      class="form-control"
+      required
+    >
+{{ question.question_statement }}</textarea
+    >
+  </div>
+
+  <div class="form-group">
+    <label for="option1" class="form-label">Option 1</label>
+    <input
+      type="text"
+      name="option1"
+      id="option1"
+      class="form-control"
+      required
+      value="{{ question.option1 }}"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="option2" class="form-label">Option 2</label>
+    <input
+      type="text"
+      name="option2"
+      id="option2"
+      class="form-control"
+      required
+      value="{{ question.option2 }}"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="option3" class="form-label">Option 3</label>
+    <input
+      type="text"
+      name="option3"
+      id="option3"
+      class="form-control"
+      value="{{ question.option3 }}"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="option4" class="form-label">Option 4</label>
+    <input
+      type="text"
+      name="option4"
+      id="option4"
+      class="form-control"
+      value="{{ question.option4 }}"
+    />
+  </div>
+
+  <div class="form-group">
+    <label for="correct_option" class="form-label">Correct Option (1-4)</label>
+    <input
+      type="number"
+      name="correct_option"
+      id="correct_option"
+      class="form-control"
+      min="1"
+      max="4"
+      required
+      value="{{ question.correct_option }}"
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary">
+    <i class="fas fa-save"></i> Save Changes
+  </button>
+</form>
+
+{% endblock %}

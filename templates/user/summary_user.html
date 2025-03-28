@@ -1,0 +1,128 @@
+{% extends 'layout.html' %} {% block title %}Quiz Summary{% endblock %} {% block
+content %}
+<div class="container mt-5">
+  <h1 class="display-1 text-center text-purple mb-4">Quiz Summary</h1>
+  <hr />
+
+  <div class="row">
+    <!-- Bar Chart: Quizzes Attempted per Subject -->
+    <div class="col-md-6">
+      <h3 class="text-center">Quizzes Attempted per Subject</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+    <!-- Pie Chart: 3 Latest Subjects Percentage -->
+    <div class="col-md-6">
+      <h3 class="text-center">Latest Quiz Percentage</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- JSON data for charts -->
+<script id="subjects-data" type="application/json">
+  {{ subjects | tojson | safe }}
+</script>
+<script id="quiz-counts-data" type="application/json">
+  {{ quiz_counts | tojson | safe }}
+</script>
+<script id="pie-subjects-data" type="application/json">
+  {{ pie_subjects | tojson | safe }}
+</script>
+<script id="percentages-data" type="application/json">
+  {{ percentages | tojson | safe }}
+</script>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Data for Bar Chart
+    var subjects = JSON.parse(
+      document.getElementById("subjects-data").textContent
+    );
+    var quizCounts = JSON.parse(
+      document.getElementById("quiz-counts-data").textContent
+    );
+
+    // Data for Pie Chart
+    var pieSubjects = JSON.parse(
+      document.getElementById("pie-subjects-data").textContent
+    );
+    var percentages = JSON.parse(
+      document.getElementById("percentages-data").textContent
+    );
+
+    // Check if all quiz counts are zero
+    var allZeros = quizCounts.every((count) => count === 0);
+
+    if (allZeros) {
+      var chartContainer = document.querySelector(".row");
+      chartContainer.innerHTML = `
+    <div class="col-12 text-center">
+      <p class="text-danger fw-bold fs-4">No quizzes attempted</p>
+    </div>
+  `;
+    } else {
+      // Bar Chart - Quizzes Attempted per Subject
+      var barCtx = document.getElementById("barChart").getContext("2d");
+      new Chart(barCtx, {
+        type: "bar",
+        data: {
+          labels: subjects,
+          datasets: [
+            {
+              label: "Number of Quizzes",
+              data: quizCounts,
+              backgroundColor: "rgba(54, 162, 235, 0.6)",
+              borderColor: "rgba(54, 162, 235, 1)",
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1 },
+            },
+          },
+        },
+      });
+    }
+
+    // Pie Chart - Latest Quiz Percentage
+    var pieCtx = document.getElementById("pieChart").getContext("2d");
+    new Chart(pieCtx, {
+      type: "pie",
+      data: {
+        labels: pieSubjects,
+        datasets: [
+          {
+            data: percentages,
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.6)",
+              "rgba(54, 162, 235, 0.6)",
+              "rgba(255, 206, 86, 0.6)",
+              "rgba(75, 192, 192, 0.6)",
+              "rgba(153, 102, 255, 0.6)",
+              "rgba(255, 159, 64, 0.6)",
+            ],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            font: { size: 16 },
+          },
+        },
+      },
+    });
+  });
+</script>
+
+{% endblock %}

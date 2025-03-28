@@ -1,0 +1,155 @@
+{% extends 'layout.html' %} {% block title %}Quiz Management{% endblock %} {%
+block content %}
+<div class="container mt-5">
+  <h1 class="display-1 text-center text-purple mb-4">Quiz Management</h1>
+
+  <!-- Add Quiz Button -->
+  <a href="{{ url_for('add_quiz') }}" class="btn btn-purple mb-3">
+    <i class="fas fa-plus"></i> Add Quiz
+  </a>
+
+  <!-- Search Bar with Button -->
+  <div class="mb-4">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        id="quizSearch"
+        placeholder="Search quizzes by ID, subject, chapter, or remarks..."
+        onkeyup="filterQuizzes()"
+      />
+      <button class="btn btn-purple" type="button" onclick="filterQuizzes()">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+  </div>
+
+  <h2 class="display-2 text-black">Quizzes:</h2>
+
+  <div class="row" id="quizList">
+    {% for quiz in quizzes %}
+    <div
+      class="col-md-6 quiz-card"
+      data-id="{{ quiz.id }}"
+      data-subject="{{ quiz.chapter.subject.name|lower if quiz.chapter and quiz.chapter.subject else 'Unknown' }}"
+      data-chapter="{{ quiz.chapter.name|lower if quiz.chapter else 'Unknown' }}"
+      data-remarks="{{ quiz.remarks|lower if quiz.remarks else '' }}"
+    >
+      <div class="card mb-4">
+        <div class="card-header bg-purple text-white">
+          <h3 class="card-title">
+            Quiz {{ quiz.id }} ({{ quiz.chapter.subject.name if quiz.chapter and
+            quiz.chapter.subject else 'Unknown' }})
+          </h3>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>Chapter:</strong> {{ quiz.chapter.name if quiz.chapter else
+            'Unknown' }}
+          </p>
+          <p><strong>Date:</strong> {{ quiz.date_of_quiz }}</p>
+          <p>
+            <strong>Time Duration:</strong> {{ quiz.time_duration }} minutes
+          </p>
+          <p><strong>Remarks:</strong> {{ quiz.remarks }}</p>
+
+          <h4>Questions:</h4>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Question ID</th>
+                <th>Heading</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for question in quiz.questions %}
+              <tr>
+                <td>{{ question.id }}</td>
+                <td>{{ question.question_heading }}</td>
+                <td>
+                  <a
+                    href="{{ url_for('edit_question', id=question.id) }}"
+                    class="btn btn-warning btn-sm"
+                  >
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+                  <a
+                    href="{{ url_for('delete_question', id=question.id) }}"
+                    class="btn btn-danger btn-sm"
+                  >
+                    <i class="fas fa-trash"></i> Delete
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-footer">
+          <a
+            href="{{ url_for('add_question', quiz_id=quiz.id) }}"
+            class="btn btn-purple"
+          >
+            <i class="fas fa-plus"></i> Add Question
+          </a>
+          <a
+            href="{{ url_for('edit_quiz', id=quiz.id) }}"
+            class="btn btn-warning"
+          >
+            <i class="fas fa-edit"></i> Edit Quiz
+          </a>
+          <a
+            href="{{ url_for('delete_quiz', id=quiz.id) }}"
+            class="btn btn-danger"
+          >
+            <i class="fas fa-trash"></i> Delete Quiz
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <p
+    id="noResultsMessage"
+    class="text-center text-danger fw-bold mt-4"
+    style="display: none"
+  >
+    No matching quizzes found.
+  </p>
+</div>
+
+<script>
+  function filterQuizzes() {
+    const input = document.getElementById("quizSearch").value.toLowerCase();
+    const quizzes = document.getElementsByClassName("quiz-card");
+    let anyVisible = false;
+
+    for (let i = 0; i < quizzes.length; i++) {
+      const quizId = quizzes[i].getAttribute("data-id");
+      const subject = quizzes[i].getAttribute("data-subject");
+      const chapter = quizzes[i].getAttribute("data-chapter");
+      const remarks = quizzes[i].getAttribute("data-remarks");
+
+      if (
+        quizId.includes(input) ||
+        subject.includes(input) ||
+        chapter.includes(input) ||
+        remarks.includes(input)
+      ) {
+        quizzes[i].style.display = "";
+        anyVisible = true;
+      } else {
+        quizzes[i].style.display = "none";
+      }
+    }
+
+    document.getElementById("noResultsMessage").style.display = anyVisible
+      ? "none"
+      : "block";
+  }
+</script>
+
+{% endblock %}

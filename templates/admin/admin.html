@@ -1,0 +1,164 @@
+{% extends 'layout.html' %} {% block title %}Admin Dashboard{% endblock %} {%
+block content %}
+<div class="container mt-5">
+  <h1 class="display-1 text-center text-purple mb-4">Admin Dashboard</h1>
+
+  <!-- Add Subject Button -->
+  <a href="{{ url_for('add_subject') }}" class="btn btn-purple mb-3">
+    <i class="fas fa-plus"></i> Add Subject
+  </a>
+
+  <!-- Search Bar -->
+  <div class="mb-4">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        id="subjectSearch"
+        placeholder="Search subjects by name..."
+        onkeyup="filterSubjects()"
+      />
+      <button class="btn btn-purple" type="button" onclick="filterSubjects()">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Subjects Section -->
+  <h2 class="display-2 text-purple">Subjects:</h2>
+
+  <div class="row" id="subjectList">
+    {% for subject in subjects %}
+    <div class="col-md-6 subject-card" data-name="{{ subject.name|lower }}">
+      <div class="card mb-4">
+        <div class="card-header bg-purple text-white">
+          <h3 class="card-title">{{ subject.name }}</h3>
+        </div>
+        <div class="card-body">
+          <p><strong>Subject ID:</strong> {{ subject.id }}</p>
+          <p>
+            <strong>Number of Chapters:</strong> {{ subject.chapters|length }}
+          </p>
+
+          <!-- Chapters Table -->
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Chapter Name</th>
+                <th>No. of Questions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for chapter in subject.chapters %}
+              <tr>
+                <td>{{ chapter.name }}</td>
+                <td>
+                  {% set total_questions = namespace(value=0) %} {% for quiz in
+                  chapter.quizes %} {% set total_questions.value =
+                  total_questions.value + quiz.questions|length %} {% endfor %}
+                  {{ total_questions.value }}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Card Footer Buttons -->
+        <div class="card-footer d-flex p-2">
+          <a
+            href="{{ url_for('show_subject', id=subject.id) }}"
+            class="btn btn-purple btn-sm me-1"
+          >
+            <i class="fas fa-search"></i> Show
+          </a>
+          <a
+            href="{{ url_for('edit_subject', id=subject.id) }}"
+            class="btn btn-warning btn-sm me-1"
+          >
+            <i class="fas fa-edit"></i> Edit
+          </a>
+          <a
+            href="{{ url_for('delete_subject', id=subject.id) }}"
+            class="btn btn-danger btn-sm"
+          >
+            <i class="fas fa-trash"></i> Delete
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Message for No Results Found -->
+  <p
+    id="noResultsMessage"
+    class="text-center text-danger fw-bold mt-4"
+    style="display: none"
+  >
+    No matching subjects found.
+  </p>
+</div>
+
+<!-- JavaScript for Filtering -->
+<script>
+  function filterSubjects() {
+    const input = document.getElementById("subjectSearch").value.toLowerCase();
+    const subjects = document.getElementsByClassName("subject-card");
+    let anyVisible = false;
+
+    for (let i = 0; i < subjects.length; i++) {
+      const subjectName = subjects[i].getAttribute("data-name");
+      if (subjectName.includes(input)) {
+        subjects[i].style.display = "";
+        anyVisible = true;
+      } else {
+        subjects[i].style.display = "none";
+      }
+    }
+
+    // Show "No matching subjects found" message if no results
+    document.getElementById("noResultsMessage").style.display = anyVisible
+      ? "none"
+      : "block";
+  }
+</script>
+
+{% endblock %} {% block style %}
+<style>
+  .text-purple {
+    color: #7a288a; /* Purple text color */
+  }
+
+  .bg-purple {
+    background-color: #7a288a; /* Purple background */
+  }
+
+  .btn-purple {
+    background-color: #7a288a; /* Purple button background */
+    color: white; /* White text */
+  }
+
+  .btn-purple:hover {
+    background-color: #5c1a7d; /* Darker purple on hover */
+  }
+
+  .card-title {
+    font-weight: bold;
+  }
+
+  .card-header {
+    border-bottom: none;
+    font-size: larger;
+  }
+
+  .card-footer {
+    padding: 0.5rem; /* Increased padding for card footer */
+  }
+
+  .btn-sm {
+    margin: 0; /* Remove margins from buttons */
+    padding: 0.4rem 0.8rem; /* Increased padding for buttons */
+  }
+</style>
+{% endblock %}

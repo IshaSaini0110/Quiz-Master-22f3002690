@@ -1,0 +1,159 @@
+{% extends 'layout.html' %} {% block title %}Quiz Scores{% endblock %} {% block
+content %}
+<div class="container mt-5">
+  <h1 class="display-1 text-center text-purple mb-4">Quiz Scores</h1>
+
+  <!-- Search Bar with Filters -->
+  <div class="mb-4 mt-4">
+    <div class="input-group">
+      <!-- Search by Score -->
+      <input
+        type="text"
+        class="form-control"
+        id="scoreSearchText"
+        placeholder="Search by score..."
+        onkeyup="filterScores()"
+      />
+
+      <!-- Search by Date -->
+      <input
+        type="date"
+        class="form-control"
+        id="scoreSearchDate"
+        onchange="filterScores()"
+      />
+
+      <!-- Filter by Subject -->
+      <select class="form-control" id="subjectFilter" onchange="filterScores()">
+        <option value="">All Subjects</option>
+        {% for subject in subjects %}
+        <option value="{{ subject.name }}">{{ subject.name }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Filter by Chapter -->
+      <select class="form-control" id="chapterFilter" onchange="filterScores()">
+        <option value="">All Chapters</option>
+        {% for chapter in chapters %}
+        <option value="{{ chapter.name }}">{{ chapter.name }}</option>
+        {% endfor %}
+      </select>
+
+      <button class="btn btn-purple" type="button">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Scores Table -->
+  {% if scores|length > 0 %}
+  <table class="table table-striped mt-4" id="scoreTable">
+    <thead class="thead-dark">
+      <tr>
+        <th>Quiz ID</th>
+        <th>Subject</th>
+        <th>Chapter</th>
+        <th>No. of Questions</th>
+        <th>Date</th>
+        <th>Score</th>
+        <th>Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for score in scores %}
+      <tr
+        class="score-row"
+        data-date="{{ score.time_stamp_of_attempt.strftime('%Y-%m-%d %H:%M') }}"
+        data-date-only="{{ score.time_stamp_of_attempt.strftime('%Y-%m-%d') }}"
+        data-score="{{ score.total_scored }}"
+        data-subject="{{ score.subject_name }}"
+        data-chapter="{{ score.chapter_name }}"
+      >
+        <td>{{ score.quiz_id }}</td>
+        <td>{{ score.subject_name }}</td>
+        <td>{{ score.chapter_name }}</td>
+        <td>{{ score.num_questions }}</td>
+        <td>{{ score.time_stamp_of_attempt.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ score.total_scored }} / {{ score.total_marks }}</td>
+        <td>
+          {{ (score.total_scored / score.total_marks * 100) | round(2) }}%
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Message for No Results Found -->
+  <p
+    id="noResultsMessage"
+    class="text-center text-danger fw-bold mt-4"
+    style="display: none"
+  >
+    No matching results found
+  </p>
+
+  {% else %}
+  <!-- If no quizzes attempted -->
+  <div class="text-center mt-5">
+    <p class="text-danger fw-bold fs-4">No quizzes attempted</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- JavaScript for Filtering -->
+<script>
+  function filterScores() {
+    const textInput = document
+      .getElementById("scoreSearchText")
+      .value.trim()
+      .toLowerCase();
+    const dateInput = document.getElementById("scoreSearchDate").value;
+    const subjectInput = document
+      .getElementById("subjectFilter")
+      .value.toLowerCase();
+    const chapterInput = document
+      .getElementById("chapterFilter")
+      .value.toLowerCase();
+    const scores = document.getElementsByClassName("score-row");
+    const isNumeric = /^\d+$/.test(textInput); // Check if search input is numeric
+    let anyVisible = false;
+
+    for (let i = 0; i < scores.length; i++) {
+      const quizDateOnly = scores[i].getAttribute("data-date-only"); // YYYY-MM-DD
+      const quizScore = scores[i].getAttribute("data-score");
+      const quizSubject = scores[i].getAttribute("data-subject").toLowerCase();
+      const quizChapter = scores[i].getAttribute("data-chapter").toLowerCase();
+
+      let showRow = true;
+
+      // Filter by score (if input is numeric)
+      if (textInput && isNumeric) {
+        showRow = quizScore.includes(textInput);
+      }
+
+      // Filter by date
+      if (dateInput) {
+        showRow = showRow && quizDateOnly === dateInput;
+      }
+
+      // Filter by subject
+      if (subjectInput) {
+        showRow = showRow && quizSubject.includes(subjectInput);
+      }
+
+      // Filter by chapter
+      if (chapterInput) {
+        showRow = showRow && quizChapter.includes(chapterInput);
+      }
+
+      scores[i].style.display = showRow ? "" : "none";
+      if (showRow) anyVisible = true;
+    }
+
+    // Show "No matching results found" message
+    let noResultsMessage = document.getElementById("noResultsMessage");
+    noResultsMessage.style.display = anyVisible ? "none" : "block";
+  }
+</script>
+
+{% endblock %}

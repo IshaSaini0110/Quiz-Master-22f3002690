@@ -1,0 +1,25 @@
+{% extends 'layout.html' %} {% block title %} Add subject {% endblock %} {%
+block content %}
+
+<h1 class="display-1">Add Subject</h1>
+
+<form action="" method="post" class="form">
+  <div class="form-group">
+    <label for="name" class="form-label">Subject Name</label>
+    <input type="text" name="name" id="name" class="form-control" required />
+  </div>
+  <div class="form-group">
+    <label for="description" class="form-label">Description</label>
+    <textarea
+      name="description"
+      id="description"
+      class="form-control"
+      rows="4"
+    ></textarea>
+  </div>
+  <button type="submit" class="btn btn-success">
+    <i class="fas fa-plus"> Add </i>
+  </button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'layout.html' %} {% block title %}All Users - Admin{% endblock %} {%
+block content %}
+<div class="container mt-4">
+  <h1 class="display-2 text-center text-purple mb-4">
+    Users and Quiz Attempts
+  </h1>
+  <hr />
+
+  <!-- Search Filter: Username and Full Name -->
+  <div class="row mb-4">
+    <div class="col-md-10">
+      <input
+        type="text"
+        class="form-control"
+        id="searchField"
+        placeholder="Search by Username or Full Name..."
+        onkeyup="filterUsers()"
+      />
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-purple w-100" onclick="filterUsers()">
+        <i class="fas fa-search"></i> Search
+      </button>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-hover" id="userTable">
+    <thead>
+      <tr>
+        <th style="background-color: #7a288a; color: white">Username</th>
+        <th style="background-color: #7a288a; color: white">Full Name</th>
+        <th style="background-color: #7a288a; color: white">Quiz Name</th>
+        <th style="background-color: #7a288a; color: white">Chapter</th>
+        <th style="background-color: #7a288a; color: white">Score</th>
+        <th style="background-color: #7a288a; color: white">Percentage</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %} {% set user_rowspan = user.quizzes | length %} {%
+      for quiz in user.quizzes %}
+      <tr
+        class="user-row"
+        data-username="{{ user.username | lower }}"
+        data-fullname="{{ user.fullname | lower if user.fullname else '' }}"
+      >
+        {% if loop.index == 1 %}
+        <td rowspan="{{ user_rowspan }}">{{ user.username }}</td>
+        <td rowspan="{{ user_rowspan }}">{{ user.fullname }}</td>
+        {% endif %}
+        <td>{{ quiz.quiz_name }}</td>
+        <td>{{ quiz.chapter_name }}</td>
+        <td>{{ quiz.score }} / {{ quiz.total_marks }}</td>
+        <td>{{ (quiz.score / quiz.total_marks * 100) | round(2) }}%</td>
+      </tr>
+      {% endfor %} {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Message for No Results Found -->
+  <p
+    id="noResultsMessage"
+    class="text-center text-danger fw-bold mt-4"
+    style="display: none"
+  >
+    No matching users found.
+  </p>
+</div>
+
+<!-- JavaScript for Filtering by Username and Full Name -->
+<script>
+  function filterUsers() {
+    const searchInput = document
+      .getElementById("searchField")
+      .value.toLowerCase();
+    const rows = document.getElementsByClassName("user-row");
+    let anyVisible = false;
+
+    for (let i = 0; i < rows.length; i++) {
+      const username = rows[i].getAttribute("data-username");
+      const fullname = rows[i].getAttribute("data-fullname");
+
+      if (username.includes(searchInput) || fullname.includes(searchInput)) {
+        rows[i].style.display = "";
+        anyVisible = true;
+      } else {
+        rows[i].style.display = "none";
+      }
+    }
+
+    document.getElementById("noResultsMessage").style.display = anyVisible
+      ? "none"
+      : "block";
+  }
+</script>
+{% endblock %} {% block style %}
+<style>
+  .text-purple {
+    color: #7a288a;
+  }
+  .bg-purple {
+    background-color: #7a288a;
+  }
+  .btn-purple {
+    background-color: #7a288a;
+    color: white;
+  }
+  .btn-purple:hover {
+    background-color: #5c1a7d;
+  }
+  .table th,
+  .table td {
+    vertical-align: middle;
+    text-align: center;
+  }
+</style>
+{% endblock %}
